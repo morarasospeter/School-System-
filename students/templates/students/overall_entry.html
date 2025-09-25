@@ -1,0 +1,367 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Overall Entry Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===== Global Styles ===== */
+        body {
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #1a237e;
+            font-size: 36px;
+            margin: 30px 0 20px;
+            text-shadow: 1px 1px 8px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+        }
+
+        /* ===== Search Form ===== */
+        form.search-form {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        form.search-form input {
+            padding: 12px 16px;
+            width: 250px;
+            max-width: 90%;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        form.search-form input:focus {
+            border-color: #1a73e8;
+            outline: none;
+            box-shadow: 0 0 10px rgba(26,115,232,0.3);
+        }
+        form.search-form button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #42a5f5, #1a73e8);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+        }
+        form.search-form button:hover {
+            background: linear-gradient(135deg, #1a73e8, #155ab6);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Student Info Card ===== */
+        .student-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            width: 95%;
+            max-width: 900px;
+        }
+        .student-info img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #1a73e8;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        .student-details p {
+            margin: 6px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* ===== Navigation Tabs ===== */
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        nav button {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #42a5f5, #1a73e8);
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        nav button.active {
+            background: linear-gradient(135deg, #1a73e8, #155ab6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        nav button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #155ab6, #0d47a1);
+        }
+
+        /* ===== Section Forms ===== */
+        section {
+            display: none;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            padding: 25px 20px;
+            border-radius: 20px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+            width: 95%;
+            max-width: 950px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+        }
+        section.active { display: block; opacity: 1; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        section h3 {
+            margin-bottom: 15px;
+            color: #1a237e;
+        }
+
+        section form input, section form select, section form textarea {
+            display: block;
+            margin-bottom: 16px;
+            padding: 12px 15px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+        section form input:focus, section form select:focus, section form textarea:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 12px rgba(26,115,232,0.3);
+            outline: none;
+        }
+
+        section form button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #4CAF50, #388e3c);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        section form button:hover {
+            background: linear-gradient(135deg, #388e3c, #2e7d32);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        /* ===== Tables ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ccc;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background: linear-gradient(135deg, #42a5f5, #1a73e8);
+            color: #fff;
+            text-transform: uppercase;
+        }
+        tr:hover { background: rgba(66,165,245,0.1); }
+
+        /* ===== Back Button ===== */
+        .back-btn {
+            display: block;
+            margin: 20px auto 40px;
+            padding: 14px 28px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: linear-gradient(135deg, #c62828, #b71c1c);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .student-info { flex-direction: column; align-items: center; text-align: center; }
+            .student-info img { margin-bottom: 15px; margin-right: 0; }
+            nav button { flex: 1 1 45%; margin: 6px; }
+            section form input, section form select, section form textarea { max-width: 100%; }
+        }
+    </style>
+    <script>
+        function showSection(sectionId, btn) {
+            const sections = document.querySelectorAll('section');
+            const buttons = document.querySelectorAll('nav button');
+            sections.forEach(sec => sec.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            btn.classList.add('active');
+        }
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const section = urlParams.get('section');
+            if(section) {
+                const btn = document.querySelector(`nav button[onclick*="${section}"]`);
+                if(btn) showSection(section + 'Section', btn);
+            }
+        });
+    </script>
+</head>
+<body>
+
+<h2>Overall Entry Dashboard</h2>
+
+<!-- SEARCH STUDENT -->
+<form method="POST" class="search-form">
+    {% csrf_token %}
+    <input type="text" name="admission_number" placeholder="Enter Admission Number to Search" required>
+    <button type="submit" name="search-admission">Search</button>
+</form>
+
+{% if student %}
+<div class="student-info">
+    {% if student.photo %}
+        <img src="{{ student.photo.url }}" alt="Student Photo">
+    {% else %}
+        <img src="https://via.placeholder.com/120" alt="No Photo">
+    {% endif %}
+    <div class="student-details">
+        <p><strong>Name:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+        <p><strong>Class:</strong> {{ student.student_class }} | <strong>Stream:</strong> {{ student.stream }}</p>
+        <p><strong>Contact:</strong> {{ student.contact_number }}</p>
+        <p><strong>Parent:</strong> {{ student.parent_name }} - {{ student.parent_contact }}</p>
+        <p><strong>Address:</strong> {{ student.address }}</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- NAVIGATION TABS -->
+<nav>
+    <button class="active" onclick="showSection('studentSection', this)">Student</button>
+    <button onclick="showSection('disciplineSection', this)">Discipline</button>
+    <button onclick="showSection('librarySection', this)">Library</button>
+    <button onclick="showSection('feeSection', this)">Fees</button>
+    <button onclick="showSection('performanceSection', this)">Performance</button>
+</nav>
+
+<!-- SECTIONS -->
+<section id="studentSection" class="active">
+    <h3>Add/Edit Student</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ student_form.as_p }}
+        <button type="submit" name="student-submit">Save Student</button>
+    </form>
+</section>
+
+<section id="disciplineSection">
+    <h3>Add Discipline Record</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ discipline_form.as_p }}
+        <button type="submit" name="discipline-submit">Save Discipline</button>
+    </form>
+</section>
+
+<section id="librarySection">
+    <h3>Manage Book Records</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ library_form.as_p }}
+        <button type="submit" name="library-submit">Save Book</button>
+    </form>
+    {% if books %}
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th><th>Author</th><th>Publisher</th><th>Published Date</th><th>ISBN</th><th>Subject</th><th>Total Copies</th><th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.publisher }}</td>
+                <td>{{ book.published_date|date:"M d, Y" }}</td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.subject }}</td>
+                <td>{{ book.total_copies }}</td>
+                <td>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="submit" name="delete-book" value="{{ book.id }}">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No books available.</p>
+    {% endif %}
+</section>
+
+<section id="feeSection">
+    <h3>Add Fee Record</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ fee_form.as_p }}
+        <button type="submit" name="fee-submit">Save Fee</button>
+    </form>
+</section>
+
+<section id="performanceSection">
+    <h3>Add Performance Record</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ performance_form.as_p }}
+        <button type="submit" name="performance-submit">Save Performance</button>
+    </form>
+</section>
+
+<!-- BACK BUTTON -->
+<button class="back-btn" onclick="window.location.href='{% url 'home' %}'">⬅ Back to Main Menu</button>
+
+</body>
+</html>

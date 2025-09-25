@@ -1,0 +1,139 @@
+{% extends "students/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Header with Buttons -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+        <h2 class="text-gradient mb-3 mb-md-0">Library Books by Subject</h2>
+        <div>
+            <a href="{% url 'overall_entry_dashboard' %}?section=library" class="btn btn-success btn-glow me-2 mb-2 mb-md-0">Add Book</a>
+            <a href="{% url 'library_page' %}" class="btn btn-warning btn-glow me-2 mb-2 mb-md-0">Borrowed Books</a>
+            <a href="{% url 'home' %}" class="btn btn-secondary btn-glow mb-2 mb-md-0">Back to Main Menu</a>
+        </div>
+    </div>
+
+    {% if subjects %}
+        {% for subject, books_data in subjects.items %}
+        <div class="accordion mb-4" id="accordion-{{ forloop.counter }}">
+            <div class="accordion-item shadow-sm rounded-3 overflow-hidden">
+                <h2 class="accordion-header" id="heading-{{ forloop.counter }}">
+                    <button class="accordion-button collapsed bg-gradient text-white" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapse-{{ forloop.counter }}" aria-expanded="false" 
+                            aria-controls="collapse-{{ forloop.counter }}">
+                        Subject: {{ subject }} ({{ books_data|length }} books)
+                    </button>
+                </h2>
+                <div id="collapse-{{ forloop.counter }}" class="accordion-collapse collapse" 
+                     aria-labelledby="heading-{{ forloop.counter }}" data-bs-parent="#accordion-{{ forloop.counter }}">
+                    <div class="accordion-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0 align-middle">
+                                <thead class="table-dark text-center">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Author</th>
+                                        <th>Publisher</th>
+                                        <th>Published Date</th>
+                                        <th>ISBN</th>
+                                        <th>Subject</th>
+                                        <th>Total Copies</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    {% for data in books_data %}
+                                    <tr>
+                                        <td>{{ data.book.title }}</td>
+                                        <td>{{ data.book.author }}</td>
+                                        <td>{{ data.book.publisher }}</td>
+                                        <td>{{ data.book.published_date|date:"M d, Y" }}</td>
+                                        <td>{{ data.book.isbn }}</td>
+                                        <td>{{ subject }}</td>
+                                        <td>{{ data.total_copies }}</td>
+                                        <td class="d-flex flex-wrap justify-content-center gap-1">
+                                            <form method="post" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" name="delete-book" value="{{ data.book.id }}" 
+                                                        class="btn btn-sm btn-danger btn-glow"
+                                                        onclick="return confirm('Are you sure you want to delete this book?');">
+                                                    Delete
+                                                </button>
+                                            </form>
+
+                                            {% if student %}
+                                                {% if data.available > 0 %}
+                                                    <a href="{% url 'borrow_book_page' data.book.id %}" 
+                                                       class="btn btn-sm btn-primary btn-glow">Borrow</a>
+                                                {% elif data.last_record and data.last_record.student == student and not data.last_record.returned %}
+                                                    <form method="post" style="display:inline;">
+                                                        {% csrf_token %}
+                                                        <button type="submit" name="return-book" value="{{ data.book.id }}" 
+                                                                class="btn btn-sm btn-success btn-glow">Return</button>
+                                                    </form>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-center fs-5 mt-5 text-white-50">No books found in the library.</p>
+    {% endif %}
+</div>
+
+<style>
+/* Headers */
+.text-gradient {
+    background: linear-gradient(90deg, #42a5f5, #1a73e8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Buttons glow effect */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.15) inset;
+}
+
+/* Accordion headers gradient */
+.accordion-button.bg-gradient {
+    background: linear-gradient(135deg, #1a73e8, #42a5f5);
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* Table styling */
+.table-hover tbody tr:hover {
+    background: rgba(26,115,232,0.15);
+    transition: background 0.3s ease;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255,255,255,0.05);
+}
+
+/* Table responsive */
+.table-responsive {
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Rankings & Analytics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    /* ===== Global Styles ===== */
+    body {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        color: #333;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    h2, h3 {
+        text-align: center;
+        color: #1a237e;
+        margin: 20px 0 15px;
+        text-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+    }
+
+    /* ===== Navigation Buttons ===== */
+    nav {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    nav a {
+        display: inline-block;
+        margin: 6px 4px;
+        padding: 12px 22px;
+        background: linear-gradient(135deg, #42a5f5, #1a73e8);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+    nav a:hover {
+        background: linear-gradient(135deg, #155ab6, #0d47a1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+    }
+
+    /* ===== Tables ===== */
+    table {
+        width: 100%;
+        max-width: 950px;
+        margin: 20px auto 40px;
+        border-collapse: collapse;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(8px);
+    }
+    th, td {
+        padding: 12px 16px;
+        text-align: center;
+        font-size: 15px;
+    }
+    th {
+        background: linear-gradient(135deg, #42a5f5, #1a73e8);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    tbody tr:nth-child(even) { background-color: rgba(240, 248, 255, 0.6); }
+    tbody tr:hover { background-color: rgba(66,165,245,0.15); transition: 0.2s; }
+
+    .delete-btn {
+        padding: 6px 12px;
+        background: #e53935;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .delete-btn:hover { background: #b71c1c; transform: translateY(-2px); }
+
+    .rank-1 { background-color: #ffd700; }  /* Gold */
+    .rank-2 { background-color: #c0c0c0; }  /* Silver */
+    .rank-3 { background-color: #cd7f32; }  /* Bronze */
+    .fail { color: red; font-weight: bold; }
+
+    caption {
+        caption-side: top;
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #155ab6;
+        text-align: center;
+    }
+
+    /* ===== Charts ===== */
+    canvas {
+        max-width: 900px;
+        margin: 30px auto;
+        display: block;
+        background: rgba(255,255,255,0.95);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+        table, canvas { width: 95%; }
+        nav a { display: block; margin: 8px auto; }
+    }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+    <a href="{% url 'menu' %}">⬅ Back to Menu</a>
+    <a href="{% url 'logout' %}">🚪 Logout</a>
+</nav>
+
+<!-- Class/Stream Ranking -->
+{% if stream %}
+<h2>Class/Stream Ranking: {{ stream }}</h2>
+{% if class_ranked %}
+<table>
+    <caption>Students in {{ stream }}</caption>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Admission Number</th>
+            <th>Name</th>
+            <th>Average Marks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in class_ranked %}
+        <tr class="{% if student.rank == 1 %}rank-1{% elif student.rank == 2 %}rank-2{% elif student.rank == 3 %}rank-3{% endif %}">
+            <td>{{ student.rank }}</td>
+            <td>{{ student.admission_number }}</td>
+            <td>{{ student.name }}</td>
+            <td class="{% if student.avg_marks < 50 %}fail{% endif %}">{{ student.avg_marks|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="text-align:center; font-size:16px;">No students found in this stream.</p>
+{% endif %}
+{% endif %}
+
+<!-- Overall Student Ranking -->
+<h2>Overall Student Ranking</h2>
+<table>
+    <caption>All Students</caption>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Admission Number</th>
+            <th>Name</th>
+            <th>Stream</th>
+            <th>Average Marks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in overall_ranked %}
+        <tr class="{% if student.rank == 1 %}rank-1{% elif student.rank == 2 %}rank-2{% elif student.rank == 3 %}rank-3{% endif %}">
+            <td>{{ student.rank }}</td>
+            <td>{{ student.admission_number }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.stream }}</td>
+            <td class="{% if student.avg_marks < 50 %}fail{% endif %}">{{ student.avg_marks|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Stream Performance Ranking -->
+<h2>Stream Performance Ranking</h2>
+<table>
+    <caption>Best Performing Streams</caption>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Stream</th>
+            <th>Average Marks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in stream_avg_list %}
+        <tr class="{% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ s.stream }}</td>
+            <td>{{ s.avg_marks|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Charts Section -->
+<h2>Analytics Charts</h2>
+<canvas id="streamTopChart"></canvas>
+<canvas id="overallTopChart"></canvas>
+<canvas id="streamAvgChart"></canvas>
+
+<script>
+// Chart 1: Top Students in Stream
+const streamTopData = {
+    labels: [{% for student in class_ranked %}"{{ student.name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+    datasets: [{
+        label: 'Average Marks',
+        data: [{% for student in class_ranked %}{{ student.avg_marks|floatformat:"g" }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: 'rgba(66,165,245,0.7)'
+    }]
+};
+new Chart(document.getElementById('streamTopChart'), {
+    type: 'bar',
+    data: streamTopData,
+    options: { responsive: true, plugins: { title: { display: true, text: 'Top Students in Stream {{ stream }}' } }, scales: { y: { beginAtZero: true, max: 100 } } }
+});
+
+// Chart 2: Overall Top Students
+const overallTopData = {
+    labels: [{% for student in overall_ranked %}"{{ student.name }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+    datasets: [{
+        label: 'Average Marks',
+        data: [{% for student in overall_ranked %}{{ student.avg_marks|floatformat:"g" }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: 'rgba(255,193,7,0.7)'
+    }]
+};
+new Chart(document.getElementById('overallTopChart'), {
+    type: 'bar',
+    data: overallTopData,
+    options: { responsive: true, plugins: { title: { display: true, text: 'Overall Top Students' } }, scales: { y: { beginAtZero: true, max: 100 } } }
+});
+
+// Chart 3: Stream Average Performance
+const streamAvgData = {
+    labels: [{% for s in stream_avg_list %}"{{ s.stream }}"{% if not forloop.last %}, {% endif %}{% endfor %}],
+    datasets: [{
+        label: 'Average Marks',
+        data: [{% for s in stream_avg_list %}{{ s.avg_marks|floatformat:"g" }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+        backgroundColor: 'rgba(76,175,80,0.7)'
+    }]
+};
+new Chart(document.getElementById('streamAvgChart'), {
+    type: 'bar',
+    data: streamAvgData,
+    options: { responsive: true, plugins: { title: { display: true, text: 'Stream Average Performance' } }, scales: { y: { beginAtZero: true, max: 100 } } }
+});
+</script>
+
+</body>
+</html>

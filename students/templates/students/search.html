@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Search Student</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Poppins', Arial, sans-serif;
+        background: linear-gradient(135deg, #bbdefb, #e3f2fd);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+    }
+    h2 {
+        color: #1a237e;
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 25px;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    }
+    form {
+        background: rgba(255,255,255,0.95);
+        padding: 25px 30px;
+        border-radius: 15px;
+        box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    input[type="text"] {
+        padding: 12px 15px;
+        width: 250px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border 0.3s ease;
+    }
+    input[type="text"]:focus {
+        border-color: #1a73e8;
+        outline: none;
+    }
+    button {
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #42a5f5, #1a73e8);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    button:hover {
+        background: linear-gradient(135deg, #155ab6, #0d47a1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+    .note {
+        margin-top: 20px;
+        font-size: 15px;
+        text-align: center;
+    }
+    .note a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    .note a:hover {
+        color: #0d47a1;
+        text-decoration: underline;
+    }
+    @media (max-width: 480px) {
+        form {
+            flex-direction: column;
+            gap: 15px;
+        }
+        input[type="text"] { width: 100%; max-width: 300px; }
+    }
+</style>
+</head>
+<body>
+
+<h2>Search Student by Admission Number</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="admission_number" placeholder="Enter Admission Number" required>
+    <button type="submit">Search</button>
+</form>
+
+<div class="note">
+    <p>Want to see the <a href="{% url 'rankings_overall' %}">Overall Rankings</a> or <a href="{% url 'rankings_stream' 'A' %}">Class/Stream Rankings</a>?</p>
+</div>
+
+</body>
+</html>
