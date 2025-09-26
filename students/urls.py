@@ -6,12 +6,12 @@ urlpatterns = [
     path('', views.login_view, name='root_login'),
 
     # ----------------- AUTH -----------------
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
+    path('login/', views.login_view, name='login'),          # login page
+    path('logout/', views.logout_view, name='logout'),       # logout page
 
     # ----------------- HOME / MAIN MENU -----------------
     path('home/', views.home, name='home'),
-    path('menu/', views.home, name='menu'),  # Alias for template use
+    path('menu/', views.home, name='menu'),                 # alias for template use
 
     # ----------------- STUDENT DASHBOARD -----------------
     path('dashboard/<str:admission_number>/', views.student_dashboard, name='student_dashboard'),
@@ -27,7 +27,7 @@ urlpatterns = [
     # ----------------- EXTRA PAGES -----------------
     path('discipline/', views.discipline_page, name='discipline_page'),
     path('library/', views.library_page, name='library_page'),
-    path('library/add/', views.library_add, name='library_add'),  # <- NEW: Add Book
+    path('library/add/', views.library_add, name='library_add'),
     path('fees/', views.fees_page, name='fees_page'),
 
     # ----------------- CORE VIEWS -----------------
