@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ------------------ SECURITY ------------------
 SECRET_KEY = 'django-insecure-be#q+e@_&n@l3_igfdwsvu05l)z@fxd15128jnrejrkg8bxuqj'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['school-system-rbof.onrender.com']
 
 
 # ------------------ APPLICATIONS ------------------
