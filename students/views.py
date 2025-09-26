@@ -38,7 +38,7 @@ def home(request):
             return redirect(reverse("student_dashboard", args=[admission_number]))
         except Student.DoesNotExist:
             error = f"Student with admission number {admission_number} not found."
-    return render(request, "students/home.html", {"error": error})
+    return render(request, "students/Home.html", {"error": error})
 
 # ----------------- CORE VIEWS -----------------
 @login_required
