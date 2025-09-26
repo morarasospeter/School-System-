@@ -19,7 +19,7 @@ def login_view(request):
             return redirect("home")
         else:
             error = "Invalid username or password."
-    return render(request, "students/login.html", {"error": error})
+    return render(request, "students/Login.html", {"error": error})
 
 # ----------------- LOGOUT -----------------
 @login_required
